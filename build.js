@@ -3,10 +3,11 @@ import { build } from "esbuild";
 import { nodeExternalsPlugin } from "esbuild-node-externals";
 
 build({
-  entryPoints: ["server.js"], // replace with your actual main file
+  entryPoints: ["server.js"],
   bundle: true,
   platform: "node",
   target: "node18",
-  outfile: "dist/bundle.js",
-  plugins: [nodeExternalsPlugin()], // this excludes all node_modules like bcrypt
+  format: "esm", // ✅ Fix: output as ESM
+  outfile: "dist/bundle.mjs", // ✅ Use .mjs extension
+  plugins: [nodeExternalsPlugin()],
 }).catch(() => process.exit(1));

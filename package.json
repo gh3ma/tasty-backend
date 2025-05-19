@@ -2,10 +2,10 @@
   "name": "food-del-backend",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "main": "server.js",
   "scripts": {
     "server": "nodemon server.js",
+    "start": "node dist/bundle.js",
     "build": "node build.js"
   },
   "author": "",
