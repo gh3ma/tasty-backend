@@ -1,58 +1,35 @@
-var __create = Object.create;
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-  }
-  return to;
-};
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
-
 // server.js
-var import_express5 = __toESM(require("express"), 1);
-var import_cors = __toESM(require("cors"), 1);
+import express5 from "express";
+import cors from "cors";
 
 // config/db.js
-var import_mongoose = __toESM(require("mongoose"), 1);
+import mongoose from "mongoose";
 var connectDB = async () => {
-  await import_mongoose.default.connect("mongodb+srv://greatstack:123123123@cluster0.3xpkeaq.mongodb.net/food-del").then(() => console.log("DB Connected"));
+  await mongoose.connect("mongodb+srv://greatstack:123123123@cluster0.3xpkeaq.mongodb.net/food-del").then(() => console.log("DB Connected"));
 };
 
 // routes/userRoute.js
-var import_express = __toESM(require("express"), 1);
+import express from "express";
 
 // controllers/userController.js
-var import_jsonwebtoken = __toESM(require("jsonwebtoken"), 1);
-var import_bcrypt = __toESM(require("bcrypt"), 1);
-var import_validator = __toESM(require("validator"), 1);
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import validator from "validator";
 
 // models/userModel.js
-var import_mongoose2 = __toESM(require("mongoose"), 1);
-var userSchema = new import_mongoose2.default.Schema({
+import mongoose2 from "mongoose";
+var userSchema = new mongoose2.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   cartData: { type: Object, default: {} }
 }, { minimize: false });
-var userModel = import_mongoose2.default.models.user || import_mongoose2.default.model("user", userSchema);
+var userModel = mongoose2.models.user || mongoose2.model("user", userSchema);
 var userModel_default = userModel;
 
 // controllers/userController.js
 var createToken = (id) => {
-  return import_jsonwebtoken.default.sign({ id }, process.env.JWT_SECRET);
+  return jwt.sign({ id }, process.env.JWT_SECRET);
 };
 var loginUser = async (req, res) => {
   const { email, password } = req.body;
@@ -61,7 +38,7 @@ var loginUser = async (req, res) => {
     if (!user) {
       return res.json({ success: false, message: "User does not exist" });
     }
-    const isMatch = await import_bcrypt.default.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.json({ success: false, message: "Invalid credentials" });
     }
@@ -79,14 +56,14 @@ var registerUser = async (req, res) => {
     if (exists) {
       return res.json({ success: false, message: "User already exists" });
     }
-    if (!import_validator.default.isEmail(email)) {
+    if (!validator.isEmail(email)) {
       return res.json({ success: false, message: "Please enter a valid email" });
     }
     if (password.length < 8) {
       return res.json({ success: false, message: "Please enter a strong password" });
     }
-    const salt = await import_bcrypt.default.genSalt(10);
-    const hashedPassword = await import_bcrypt.default.hash(password, salt);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
     const newUser = new userModel_default({ name, email, password: hashedPassword });
     const user = await newUser.save();
     const token = createToken(user._id);
@@ -98,28 +75,28 @@ var registerUser = async (req, res) => {
 };
 
 // routes/userRoute.js
-var userRouter = import_express.default.Router();
+var userRouter = express.Router();
 userRouter.post("/register", registerUser);
 userRouter.post("/login", loginUser);
 var userRoute_default = userRouter;
 
 // routes/foodRoute.js
-var import_express2 = __toESM(require("express"), 1);
+import express2 from "express";
 
 // models/foodModel.js
-var import_mongoose3 = __toESM(require("mongoose"), 1);
-var foodSchema = new import_mongoose3.default.Schema({
+import mongoose3 from "mongoose";
+var foodSchema = new mongoose3.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
   price: { type: Number, required: true },
   image: { type: String, required: true },
   category: { type: String, required: true }
 });
-var foodModel = import_mongoose3.default.models.food || import_mongoose3.default.model("food", foodSchema);
+var foodModel = mongoose3.models.food || mongoose3.model("food", foodSchema);
 var foodModel_default = foodModel;
 
 // controllers/foodController.js
-var import_fs = __toESM(require("fs"), 1);
+import fs from "fs";
 var listFood = async (req, res) => {
   try {
     const foods = await foodModel_default.find({});
@@ -149,7 +126,7 @@ var addFood = async (req, res) => {
 var removeFood = async (req, res) => {
   try {
     const food = await foodModel_default.findById(req.body.id);
-    import_fs.default.unlink(`uploads/${food.image}`, () => {
+    fs.unlink(`uploads/${food.image}`, () => {
     });
     await foodModel_default.findByIdAndDelete(req.body.id);
     res.json({ success: true, message: "Food Removed" });
@@ -160,25 +137,25 @@ var removeFood = async (req, res) => {
 };
 
 // routes/foodRoute.js
-var import_multer = __toESM(require("multer"), 1);
-var foodRouter = import_express2.default.Router();
-var storage = import_multer.default.diskStorage({
+import multer from "multer";
+var foodRouter = express2.Router();
+var storage = multer.diskStorage({
   destination: "uploads",
   filename: (req, file, cb) => {
     return cb(null, `${Date.now()}${file.originalname}`);
   }
 });
-var upload = (0, import_multer.default)({ storage });
+var upload = multer({ storage });
 foodRouter.get("/list", listFood);
 foodRouter.post("/add", upload.single("image"), addFood);
 foodRouter.post("/remove", removeFood);
 var foodRoute_default = foodRouter;
 
 // server.js
-var import_config = require("dotenv/config");
+import "dotenv/config";
 
 // routes/cartRoute.js
-var import_express3 = __toESM(require("express"), 1);
+import express3 from "express";
 
 // controllers/cartController.js
 var addToCart = async (req, res) => {
@@ -223,14 +200,14 @@ var getCart = async (req, res) => {
 };
 
 // middleware/auth.js
-var import_jsonwebtoken2 = __toESM(require("jsonwebtoken"), 1);
+import jwt2 from "jsonwebtoken";
 var authMiddleware = async (req, res, next) => {
   const { token } = req.headers;
   if (!token) {
     return res.json({ success: false, message: "Not Authorized Login Again" });
   }
   try {
-    const token_decode = import_jsonwebtoken2.default.verify(token, process.env.JWT_SECRET);
+    const token_decode = jwt2.verify(token, process.env.JWT_SECRET);
     req.body.userId = token_decode.id;
     next();
   } catch (error) {
@@ -240,18 +217,18 @@ var authMiddleware = async (req, res, next) => {
 var auth_default = authMiddleware;
 
 // routes/cartRoute.js
-var cartRouter = import_express3.default.Router();
+var cartRouter = express3.Router();
 cartRouter.post("/get", auth_default, getCart);
 cartRouter.post("/add", auth_default, addToCart);
 cartRouter.post("/remove", auth_default, removeFromCart);
 var cartRoute_default = cartRouter;
 
 // routes/orderRoute.js
-var import_express4 = __toESM(require("express"), 1);
+import express4 from "express";
 
 // models/orderModel.js
-var import_mongoose4 = __toESM(require("mongoose"), 1);
-var orderSchema = new import_mongoose4.default.Schema({
+import mongoose4 from "mongoose";
+var orderSchema = new mongoose4.Schema({
   userId: { type: String, required: true },
   items: { type: Array, required: true },
   amount: { type: Number, required: true },
@@ -260,12 +237,12 @@ var orderSchema = new import_mongoose4.default.Schema({
   date: { type: Date, default: Date.now() },
   payment: { type: Boolean, default: false }
 });
-var orderModel = import_mongoose4.default.models.order || import_mongoose4.default.model("order", orderSchema);
+var orderModel = mongoose4.models.order || mongoose4.model("order", orderSchema);
 var orderModel_default = orderModel;
 
 // controllers/orderController.js
-var import_stripe = __toESM(require("stripe"), 1);
-var stripe = new import_stripe.default(process.env.STRIPE_SECRET_KEY);
+import Stripe from "stripe";
+var stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 var currency = "usd";
 var deliveryCharge = 5;
 var frontend_URL = "http://localhost:5173";
@@ -371,7 +348,7 @@ var verifyOrder = async (req, res) => {
 };
 
 // routes/orderRoute.js
-var orderRouter = import_express4.default.Router();
+var orderRouter = express4.Router();
 orderRouter.get("/list", listOrders);
 orderRouter.post("/userorders", auth_default, userOrders);
 orderRouter.post("/place", auth_default, placeOrder);
@@ -381,14 +358,14 @@ orderRouter.post("/placecod", auth_default, placeOrderCod);
 var orderRoute_default = orderRouter;
 
 // server.js
-var app = (0, import_express5.default)();
+var app = express5();
 var port = process.env.PORT || 4e3;
-app.use(import_express5.default.json());
-app.use((0, import_cors.default)());
+app.use(express5.json());
+app.use(cors());
 connectDB();
 app.use("/api/user", userRoute_default);
 app.use("/api/food", foodRoute_default);
-app.use("/images", import_express5.default.static("uploads"));
+app.use("/images", express5.static("uploads"));
 app.use("/api/cart", cartRoute_default);
 app.use("/api/order", orderRoute_default);
 app.get("/", (req, res) => {

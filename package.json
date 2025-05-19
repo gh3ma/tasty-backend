@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "server": "nodemon server.js",
-    "start": "node dist/bundle.js",
+    "start": "node api/bundle.js",
     "build": "node build.js"
   },
   "author": "",
