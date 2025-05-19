@@ -3,11 +3,11 @@ import { build } from "esbuild";
 import { nodeExternalsPlugin } from "esbuild-node-externals";
 
 build({
-  entryPoints: ["server.js"], // or your actual server entry point
+  entryPoints: ["server.js"],
   bundle: true,
   platform: "node",
   target: "node18",
-  format: "esm", // ✅ ESM output
-  outfile: "api/bundle.js", // ✅ Output goes to api directory
+  format: "esm",
+  outfile: "api/bundle.js",
   plugins: [nodeExternalsPlugin()],
 }).catch(() => process.exit(1));
