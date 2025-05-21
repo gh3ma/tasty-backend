@@ -6,6 +6,7 @@ import {
 } from "../controllers/foodController.js";
 import { fileURLToPath } from "url";
 import multer from "multer";
+import path from "path";
 
 const foodRouter = express.Router();
 
@@ -13,7 +14,6 @@ const foodRouter = express.Router();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const storage = multer.diskStorage({
   destination: path.join(__dirname, "..", "uploads"),
   filename: (req, file, cb) => {
