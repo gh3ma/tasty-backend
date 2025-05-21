@@ -5,6 +5,12 @@ import userRouter from "./routes/userRoute.js";
 import foodRouter from "./routes/foodRoute.js";
 import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
+import path from "path";
+
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 import dotenv from "dotenv";
 
@@ -24,7 +30,9 @@ connectDB();
 // api endpoints
 app.use("/api/user", userRouter);
 app.use("/api/food", foodRouter);
-app.use("/images", express.static("uploads"));
+app.use("/images", (req, res) => {
+  res.sendFile(path.join(__dirname, "./uploads", req.path));
+});
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
 
